@@ -1,0 +1,6 @@
+framework module Pods_HoldTests {
+  umbrella header "Pods-HoldTests-umbrella.h"
+
+  export *
+  module * { export * }
+}
