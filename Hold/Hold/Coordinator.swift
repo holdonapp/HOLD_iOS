@@ -7,3 +7,24 @@
 //
 
 import Foundation
+import UIKit
+
+class Coordinator {
+    
+    static func presentRootWindow() -> UIWindow {
+        let router = Router()
+        return router.initialWindow()
+    }
+    
+    static func onBoardingViewController() -> UIViewController? {
+        
+        
+        return nil
+    }
+    
+    static func authenticationViewController() -> UIViewController? {
+        
+        
+        return nil
+    }
+}

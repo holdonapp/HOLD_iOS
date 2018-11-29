@@ -13,6 +13,8 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var loginButtonOutlet: UIButton!
     @IBOutlet weak var signUpButtonOutlet: UIButton!
     
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setup()
@@ -33,6 +35,7 @@ extension LoginViewController {
         let orange = UIColor.hold_Orange()
         self.loginButtonOutlet.configureBordersWith(color: orange)
         self.signUpButtonOutlet.configureBordersWith(color: orange)
+        
     }
     
 }
@@ -51,5 +54,11 @@ extension UIButton {
         self.layer.borderWidth = 1.0
         self.layer.borderColor = color.cgColor
         self.layer.cornerRadius = 24
+    }
+
+    override open var isHighlighted: Bool {
+        didSet {
+            self.backgroundColor = isHighlighted ? UIColor.hold_Orange() : UIColor.clear
+        }
     }
 }

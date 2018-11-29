@@ -20,6 +20,10 @@
 		84A916DC21AD3D2300F1D51D /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A916DB21AD3D2300F1D51D /* APIManager.swift */; };
 		84A916DE21AD3D9200F1D51D /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A916DD21AD3D9200F1D51D /* LoginViewModel.swift */; };
 		84A916E021AD43DA00F1D51D /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A916DF21AD43DA00F1D51D /* Router.swift */; };
+		84A916E321AFC9B400F1D51D /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A916E221AFC9B400F1D51D /* HomeViewController.swift */; };
+		84A916E521AFC9D300F1D51D /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A916E421AFC9D300F1D51D /* OnboardingViewController.swift */; };
+		84A916E721AFCA7D00F1D51D /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A916E621AFCA7D00F1D51D /* RootViewController.swift */; };
+		84A916E921AFCAD200F1D51D /* RootViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A916E821AFCAD200F1D51D /* RootViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +55,10 @@
 		84A916DB21AD3D2300F1D51D /* APIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
 		84A916DD21AD3D9200F1D51D /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		84A916DF21AD43DA00F1D51D /* Router.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
+		84A916E221AFC9B400F1D51D /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
+		84A916E421AFC9D300F1D51D /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
+		84A916E621AFCA7D00F1D51D /* RootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
+		84A916E821AFCAD200F1D51D /* RootViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewModel.swift; sourceTree = "<group>"; };
 		99BE4EA331C1E4C54860E7DD /* Pods-HoldTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HoldTests.debug.xcconfig"; path = "Target Support Files/Pods-HoldTests/Pods-HoldTests.debug.xcconfig"; sourceTree = "<group>"; };
 		CF11959DE77D1DB2B5716268 /* Pods-Hold.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Hold.debug.xcconfig"; path = "Target Support Files/Pods-Hold/Pods-Hold.debug.xcconfig"; sourceTree = "<group>"; };
 		E705302BB51A3C1F7E9943D0 /* Pods-HoldTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HoldTests.release.xcconfig"; path = "Target Support Files/Pods-HoldTests/Pods-HoldTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -120,8 +128,11 @@
 			isa = PBXGroup;
 			children = (
 				84002865219CA6250005ADA9 /* AppDelegate.swift */,
-				84002867219CA6250005ADA9 /* LoginViewController.swift */,
-				84A916DD21AD3D9200F1D51D /* LoginViewModel.swift */,
+				84A916E221AFC9B400F1D51D /* HomeViewController.swift */,
+				84A916E421AFC9D300F1D51D /* OnboardingViewController.swift */,
+				84A916E621AFCA7D00F1D51D /* RootViewController.swift */,
+				84A916E821AFCAD200F1D51D /* RootViewModel.swift */,
+				84A916E121AFC95700F1D51D /* Login */,
 				84A916D921AD3CA800F1D51D /* Coordinator.swift */,
 				84A916DF21AD43DA00F1D51D /* Router.swift */,
 				84A916DB21AD3D2300F1D51D /* APIManager.swift */,
@@ -141,6 +152,15 @@
 				8400287F219CA6270005ADA9 /* Info.plist */,
 			);
 			path = HoldTests;
+			sourceTree = "<group>";
+		};
+		84A916E121AFC95700F1D51D /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				84002867219CA6250005ADA9 /* LoginViewController.swift */,
+				84A916DD21AD3D9200F1D51D /* LoginViewModel.swift */,
+			);
+			path = Login;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -318,12 +338,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				84A916E721AFCA7D00F1D51D /* RootViewController.swift in Sources */,
 				84002868219CA6250005ADA9 /* LoginViewController.swift in Sources */,
 				84002866219CA6250005ADA9 /* AppDelegate.swift in Sources */,
 				84A916DE21AD3D9200F1D51D /* LoginViewModel.swift in Sources */,
+				84A916E321AFC9B400F1D51D /* HomeViewController.swift in Sources */,
 				84A916E021AD43DA00F1D51D /* Router.swift in Sources */,
 				84A916DC21AD3D2300F1D51D /* APIManager.swift in Sources */,
 				84A916DA21AD3CA800F1D51D /* Coordinator.swift in Sources */,
+				84A916E921AFCAD200F1D51D /* RootViewModel.swift in Sources */,
+				84A916E521AFC9D300F1D51D /* OnboardingViewController.swift in Sources */,
 				8400286E219CA6250005ADA9 /* Hold.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
