@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import Parse
 
 class Coordinator {
     
@@ -18,13 +19,33 @@ class Coordinator {
     
     static func onBoardingViewController() -> UIViewController? {
         
-        
         return nil
     }
     
-    static func authenticationViewController() -> UIViewController? {
-        
-        
-        return nil
+    static func loginViewController(viewModel: LoginViewModel) -> LoginViewController {
+        return Router.loginViewController(viewModel: viewModel)
     }
+    
+    static func authenticationViewController(viewModel: AuthenticationViewModel) -> AuthenticationViewController {
+        return Router.authenticationViewController(viewModel: viewModel)
+    }
+    
+    static func homeViewController(viewModel: HomeViewModel) -> HomeViewController {
+        return Router.homeViewController(viewModel: viewModel)
+    }
+    
+    
+    
+}
+
+
+extension Coordinator {
+    
+    func loginUserWith(_ username: String, _ password: String, completion: @escaping (PFUser?, Error?) -> ()) {
+        let api = APIManager()
+        api.login(username: username, password: password) { (user, error) in
+            completion(user, error)
+        }
+    }
+
 }

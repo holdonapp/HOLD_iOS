@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import Parse
 
 public var k_IsUsersFirstTime: Bool = UserDefaults.standard.bool(forKey: "userFirstTime")
 
@@ -19,6 +20,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
+        let parseConfig = ParseClientConfiguration {
+            $0.applicationId = "HOLD123"
+            $0.clientKey = "HOLD12345"
+            $0.server = "https://hold-ios.herokuapp.com/parse"
+        }
+        Parse.initialize(with: parseConfig)
+        
+        UserDefaults.standard.set(false, forKey: "userFirstTime")
+        
         self.window = Coordinator.presentRootWindow()
 
         return true

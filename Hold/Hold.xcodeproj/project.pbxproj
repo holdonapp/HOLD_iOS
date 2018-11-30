@@ -16,6 +16,8 @@
 		84002870219CA6270005ADA9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8400286F219CA6270005ADA9 /* Assets.xcassets */; };
 		84002873219CA6270005ADA9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 84002871219CA6270005ADA9 /* LaunchScreen.storyboard */; };
 		8400287E219CA6270005ADA9 /* HoldTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8400287D219CA6270005ADA9 /* HoldTests.swift */; };
+		843274FD21B05F2400222922 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843274FC21B05F2400222922 /* Extensions.swift */; };
+		845DD18421B093B500AFEA73 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845DD18321B093B500AFEA73 /* HomeViewModel.swift */; };
 		84A916DA21AD3CA800F1D51D /* Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A916D921AD3CA800F1D51D /* Coordinator.swift */; };
 		84A916DC21AD3D2300F1D51D /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A916DB21AD3D2300F1D51D /* APIManager.swift */; };
 		84A916DE21AD3D9200F1D51D /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A916DD21AD3D9200F1D51D /* LoginViewModel.swift */; };
@@ -24,6 +26,8 @@
 		84A916E521AFC9D300F1D51D /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A916E421AFC9D300F1D51D /* OnboardingViewController.swift */; };
 		84A916E721AFCA7D00F1D51D /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A916E621AFCA7D00F1D51D /* RootViewController.swift */; };
 		84A916E921AFCAD200F1D51D /* RootViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A916E821AFCAD200F1D51D /* RootViewModel.swift */; };
+		84A916EB21B04A2A00F1D51D /* AuthenticationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A916EA21B04A2A00F1D51D /* AuthenticationViewController.swift */; };
+		84A916ED21B04A6200F1D51D /* AuthenticationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A916EC21B04A6200F1D51D /* AuthenticationViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +55,8 @@
 		84002879219CA6270005ADA9 /* HoldTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HoldTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8400287D219CA6270005ADA9 /* HoldTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoldTests.swift; sourceTree = "<group>"; };
 		8400287F219CA6270005ADA9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		843274FC21B05F2400222922 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		845DD18321B093B500AFEA73 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		84A916D921AD3CA800F1D51D /* Coordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinator.swift; sourceTree = "<group>"; };
 		84A916DB21AD3D2300F1D51D /* APIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
 		84A916DD21AD3D9200F1D51D /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
@@ -59,6 +65,8 @@
 		84A916E421AFC9D300F1D51D /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
 		84A916E621AFCA7D00F1D51D /* RootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
 		84A916E821AFCAD200F1D51D /* RootViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewModel.swift; sourceTree = "<group>"; };
+		84A916EA21B04A2A00F1D51D /* AuthenticationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationViewController.swift; sourceTree = "<group>"; };
+		84A916EC21B04A6200F1D51D /* AuthenticationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationViewModel.swift; sourceTree = "<group>"; };
 		99BE4EA331C1E4C54860E7DD /* Pods-HoldTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HoldTests.debug.xcconfig"; path = "Target Support Files/Pods-HoldTests/Pods-HoldTests.debug.xcconfig"; sourceTree = "<group>"; };
 		CF11959DE77D1DB2B5716268 /* Pods-Hold.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Hold.debug.xcconfig"; path = "Target Support Files/Pods-Hold/Pods-Hold.debug.xcconfig"; sourceTree = "<group>"; };
 		E705302BB51A3C1F7E9943D0 /* Pods-HoldTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HoldTests.release.xcconfig"; path = "Target Support Files/Pods-HoldTests/Pods-HoldTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -129,13 +137,15 @@
 			children = (
 				84002865219CA6250005ADA9 /* AppDelegate.swift */,
 				84A916E221AFC9B400F1D51D /* HomeViewController.swift */,
+				845DD18321B093B500AFEA73 /* HomeViewModel.swift */,
 				84A916E421AFC9D300F1D51D /* OnboardingViewController.swift */,
-				84A916E621AFCA7D00F1D51D /* RootViewController.swift */,
-				84A916E821AFCAD200F1D51D /* RootViewModel.swift */,
+				84A916EE21B04A8D00F1D51D /* Root */,
 				84A916E121AFC95700F1D51D /* Login */,
+				84A916EF21B04D3800F1D51D /* Authentication */,
 				84A916D921AD3CA800F1D51D /* Coordinator.swift */,
 				84A916DF21AD43DA00F1D51D /* Router.swift */,
 				84A916DB21AD3D2300F1D51D /* APIManager.swift */,
+				843274FC21B05F2400222922 /* Extensions.swift */,
 				84002869219CA6250005ADA9 /* Main.storyboard */,
 				8400286F219CA6270005ADA9 /* Assets.xcassets */,
 				84002871219CA6270005ADA9 /* LaunchScreen.storyboard */,
@@ -161,6 +171,24 @@
 				84A916DD21AD3D9200F1D51D /* LoginViewModel.swift */,
 			);
 			path = Login;
+			sourceTree = "<group>";
+		};
+		84A916EE21B04A8D00F1D51D /* Root */ = {
+			isa = PBXGroup;
+			children = (
+				84A916E621AFCA7D00F1D51D /* RootViewController.swift */,
+				84A916E821AFCAD200F1D51D /* RootViewModel.swift */,
+			);
+			path = Root;
+			sourceTree = "<group>";
+		};
+		84A916EF21B04D3800F1D51D /* Authentication */ = {
+			isa = PBXGroup;
+			children = (
+				84A916EA21B04A2A00F1D51D /* AuthenticationViewController.swift */,
+				84A916EC21B04A6200F1D51D /* AuthenticationViewModel.swift */,
+			);
+			path = Authentication;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -272,6 +300,9 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Hold/Pods-Hold-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Bolts/Bolts.framework",
+				"${BUILT_PRODUCTS_DIR}/Parse/Parse.framework",
+				"${BUILT_PRODUCTS_DIR}/RxAtomic/RxAtomic.framework",
 				"${BUILT_PRODUCTS_DIR}/RxCocoa/RxCocoa.framework",
 				"${BUILT_PRODUCTS_DIR}/RxSwift/RxSwift.framework",
 			);
@@ -279,6 +310,9 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Bolts.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Parse.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxAtomic.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxCocoa.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwift.framework",
 			);
@@ -338,10 +372,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				84A916ED21B04A6200F1D51D /* AuthenticationViewModel.swift in Sources */,
 				84A916E721AFCA7D00F1D51D /* RootViewController.swift in Sources */,
 				84002868219CA6250005ADA9 /* LoginViewController.swift in Sources */,
 				84002866219CA6250005ADA9 /* AppDelegate.swift in Sources */,
 				84A916DE21AD3D9200F1D51D /* LoginViewModel.swift in Sources */,
+				84A916EB21B04A2A00F1D51D /* AuthenticationViewController.swift in Sources */,
 				84A916E321AFC9B400F1D51D /* HomeViewController.swift in Sources */,
 				84A916E021AD43DA00F1D51D /* Router.swift in Sources */,
 				84A916DC21AD3D2300F1D51D /* APIManager.swift in Sources */,
@@ -349,6 +385,8 @@
 				84A916E921AFCAD200F1D51D /* RootViewModel.swift in Sources */,
 				84A916E521AFC9D300F1D51D /* OnboardingViewController.swift in Sources */,
 				8400286E219CA6250005ADA9 /* Hold.xcdatamodeld in Sources */,
+				845DD18421B093B500AFEA73 /* HomeViewModel.swift in Sources */,
+				843274FD21B05F2400222922 /* Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

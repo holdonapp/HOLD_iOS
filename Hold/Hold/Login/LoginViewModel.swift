@@ -7,3 +7,18 @@
 //
 
 import Foundation
+
+class LoginViewModel {
+    
+    init() {
+        
+    }
+}
+
+extension LoginViewModel {
+    
+    func persistAuthenticationViewController() -> AuthenticationViewController {
+        let viewModel = AuthenticationViewModel()
+        return Coordinator.authenticationViewController(viewModel: viewModel)
+    }
+}

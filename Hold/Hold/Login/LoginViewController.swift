@@ -9,19 +9,30 @@
 import UIKit
 
 class LoginViewController: UIViewController {
-
+    
     @IBOutlet weak var loginButtonOutlet: UIButton!
     @IBOutlet weak var signUpButtonOutlet: UIButton!
     
-    
+    var viewModel: LoginViewModel? {
+        didSet{
+            
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setup()
     }
-
-    @IBAction func loginButtonPressed(_ sender: Any) {
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         
+        self.navigationController?.navigationBar.isHidden = true
+        
+    }
+    
+    @IBAction func loginButtonPressed(_ sender: Any) {
+        self.push_AuthenticationViewController()
     }
     
     @IBAction func signUpButtonPressed(_ sender: Any) {
@@ -31,34 +42,13 @@ class LoginViewController: UIViewController {
 
 extension LoginViewController {
     
-    func setup() {
-        let orange = UIColor.hold_Orange()
-        self.loginButtonOutlet.configureBordersWith(color: orange)
-        self.signUpButtonOutlet.configureBordersWith(color: orange)
-        
+    private func setup() {
+        self.loginButtonOutlet.configureBordersWith(color: .holdOrange)
+        self.signUpButtonOutlet.configureBordersWith(color: .holdOrange)
     }
     
-}
-
-extension UIColor {
-    
-    static func hold_Orange() -> UIColor {
-        return UIColor(displayP3Red: 255/255, green: 122/255, blue: 7/255, alpha: 1)
-    }
-
-}
-
-extension UIButton {
-    
-    func configureBordersWith(color: UIColor) {
-        self.layer.borderWidth = 1.0
-        self.layer.borderColor = color.cgColor
-        self.layer.cornerRadius = 24
-    }
-
-    override open var isHighlighted: Bool {
-        didSet {
-            self.backgroundColor = isHighlighted ? UIColor.hold_Orange() : UIColor.clear
-        }
+    private func push_AuthenticationViewController() {
+        guard let vc = self.viewModel?.persistAuthenticationViewController() else {return}
+        self.navigationController?.pushViewController(vc, animated: true)
     }
 }

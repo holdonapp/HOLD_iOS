@@ -34,3 +34,28 @@ class Router {
     }
     
 }
+
+extension Router {
+    
+     static func loginViewController(viewModel: LoginViewModel) -> LoginViewController {
+        let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "Login") as! LoginViewController
+        vc.viewModel = viewModel
+        
+        return vc
+    }
+    
+    static func authenticationViewController(viewModel: AuthenticationViewModel) -> AuthenticationViewController {
+        let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "Auth") as! AuthenticationViewController
+        vc.viewModel = viewModel
+        
+        return vc
+    }
+    
+    static func homeViewController(viewModel: HomeViewModel) -> HomeViewController {
+        let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "Home") as! HomeViewController
+        vc.viewModel = viewModel
+        
+        return vc
+    }
+    
+}
