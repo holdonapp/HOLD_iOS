@@ -1,5 +1,8 @@
 PODS:
   - Bolts/Tasks (1.9.0)
+  - NVActivityIndicatorView (4.4.0):
+    - NVActivityIndicatorView/Presenter (= 4.4.0)
+  - NVActivityIndicatorView/Presenter (4.4.0)
   - Parse (1.17.2):
     - Parse/Core (= 1.17.2)
   - Parse/Core (1.17.2):
@@ -11,6 +14,7 @@ PODS:
     - RxAtomic (~> 4.4)
 
 DEPENDENCIES:
+  - NVActivityIndicatorView
   - Parse
   - RxCocoa (~> 4.0)
   - RxSwift (~> 4.0)
@@ -18,6 +22,7 @@ DEPENDENCIES:
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - Bolts
+    - NVActivityIndicatorView
     - Parse
     - RxAtomic
     - RxCocoa
@@ -25,11 +30,12 @@ SPEC REPOS:
 
 SPEC CHECKSUMS:
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
+  NVActivityIndicatorView: ec7440a57af2450319d3a4181cca7da6fc127064
   Parse: 3b31a3dd1777b07ee7f0caee32fafbff544483a5
   RxAtomic: eacf60db868c96bfd63320e28619fe29c179656f
   RxCocoa: df63ebf7b9a70d6b4eeea407ed5dd4efc8979749
   RxSwift: 5976ecd04fc2fefd648827c23de5e11157faa973
 
-PODFILE CHECKSUM: cb841ca297ca9cd8f9825850a43eae00aa3a2a75
+PODFILE CHECKSUM: a53a2a75aaa46da1d697ba89457b46adcd9a82a7
 
 COCOAPODS: 1.6.0.beta.1

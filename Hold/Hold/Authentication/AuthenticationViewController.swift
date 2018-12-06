@@ -98,7 +98,8 @@ extension AuthenticationViewController {
     
     fileprivate func addBottomBorderToTextField(myTextField:UITextField) {
         let bottomLine   = CALayer()
-        bottomLine.frame = CGRect(x:0.0,y: myTextField.frame.height - 1,
+        bottomLine.frame = CGRect(x      : 0.0,
+                                  y      : myTextField.frame.height - 1,
                                   width  : self.view.frame.width - 40,
                                   height : 0.5)
         
