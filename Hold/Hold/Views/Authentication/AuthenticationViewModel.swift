@@ -20,14 +20,13 @@ class AuthenticationViewModel {
 extension AuthenticationViewModel {
     
     func login(_ username: String, password: String, completion: @escaping (PFUser?, Error?) -> ()) {
-        let coordinator = Coordinator()
+        let coordinator = Coordinator.shared
         coordinator.loginUserWith(username, password) { (user, error) in
             completion(user, error)
         }
     }
     
-    func persistHomeViewController() -> HomeViewController {
-        let viewModel = HomeViewModel()
+    func persistHomeViewController(viewModel: HomeViewModel) -> HomeViewController {
         return Coordinator.homeViewController(viewModel: viewModel)
     }
 }

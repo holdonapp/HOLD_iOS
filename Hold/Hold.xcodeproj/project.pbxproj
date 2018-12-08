@@ -17,6 +17,8 @@
 		84002873219CA6270005ADA9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 84002871219CA6270005ADA9 /* LaunchScreen.storyboard */; };
 		8400287E219CA6270005ADA9 /* HoldTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8400287D219CA6270005ADA9 /* HoldTests.swift */; };
 		843274FD21B05F2400222922 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843274FC21B05F2400222922 /* Extensions.swift */; };
+		845BA62F21B8C00D002C0C52 /* UserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845BA62E21B8C00D002C0C52 /* UserModel.swift */; };
+		845BA63221B9579D002C0C52 /* HoldImageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845BA63121B9579D002C0C52 /* HoldImageModel.swift */; };
 		845DD18421B093B500AFEA73 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845DD18321B093B500AFEA73 /* HomeViewModel.swift */; };
 		84A916DA21AD3CA800F1D51D /* Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A916D921AD3CA800F1D51D /* Coordinator.swift */; };
 		84A916DC21AD3D2300F1D51D /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A916DB21AD3D2300F1D51D /* APIManager.swift */; };
@@ -56,6 +58,8 @@
 		8400287D219CA6270005ADA9 /* HoldTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoldTests.swift; sourceTree = "<group>"; };
 		8400287F219CA6270005ADA9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		843274FC21B05F2400222922 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		845BA62E21B8C00D002C0C52 /* UserModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserModel.swift; sourceTree = "<group>"; };
+		845BA63121B9579D002C0C52 /* HoldImageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoldImageModel.swift; sourceTree = "<group>"; };
 		845DD18321B093B500AFEA73 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		84A916D921AD3CA800F1D51D /* Coordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinator.swift; sourceTree = "<group>"; };
 		84A916DB21AD3D2300F1D51D /* APIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
@@ -136,18 +140,12 @@
 			isa = PBXGroup;
 			children = (
 				84002865219CA6250005ADA9 /* AppDelegate.swift */,
-				84A916E221AFC9B400F1D51D /* HomeViewController.swift */,
-				845DD18321B093B500AFEA73 /* HomeViewModel.swift */,
-				84A916E421AFC9D300F1D51D /* OnboardingViewController.swift */,
-				84A916EE21B04A8D00F1D51D /* Root */,
-				84A916E121AFC95700F1D51D /* Login */,
-				84A916EF21B04D3800F1D51D /* Authentication */,
-				84A916D921AD3CA800F1D51D /* Coordinator.swift */,
-				84A916DF21AD43DA00F1D51D /* Router.swift */,
-				84A916DB21AD3D2300F1D51D /* APIManager.swift */,
 				843274FC21B05F2400222922 /* Extensions.swift */,
-				84002869219CA6250005ADA9 /* Main.storyboard */,
+				845BA62D21B8BFE3002C0C52 /* Views */,
+				845BA63021B8C019002C0C52 /* Models */,
+				845BA62C21B8BF66002C0C52 /* Coordinator, Router & API */,
 				8400286F219CA6270005ADA9 /* Assets.xcassets */,
+				84002869219CA6250005ADA9 /* Main.storyboard */,
 				84002871219CA6270005ADA9 /* LaunchScreen.storyboard */,
 				84002874219CA6270005ADA9 /* Info.plist */,
 				8400286C219CA6250005ADA9 /* Hold.xcdatamodeld */,
@@ -162,6 +160,46 @@
 				8400287F219CA6270005ADA9 /* Info.plist */,
 			);
 			path = HoldTests;
+			sourceTree = "<group>";
+		};
+		845BA62B21B8BDD4002C0C52 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				84A916E221AFC9B400F1D51D /* HomeViewController.swift */,
+				845DD18321B093B500AFEA73 /* HomeViewModel.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		845BA62C21B8BF66002C0C52 /* Coordinator, Router & API */ = {
+			isa = PBXGroup;
+			children = (
+				84A916D921AD3CA800F1D51D /* Coordinator.swift */,
+				84A916DF21AD43DA00F1D51D /* Router.swift */,
+				84A916DB21AD3D2300F1D51D /* APIManager.swift */,
+			);
+			path = "Coordinator, Router & API";
+			sourceTree = "<group>";
+		};
+		845BA62D21B8BFE3002C0C52 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				84A916E421AFC9D300F1D51D /* OnboardingViewController.swift */,
+				84A916EE21B04A8D00F1D51D /* Root */,
+				84A916E121AFC95700F1D51D /* Login */,
+				84A916EF21B04D3800F1D51D /* Authentication */,
+				845BA62B21B8BDD4002C0C52 /* Home */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		845BA63021B8C019002C0C52 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				845BA62E21B8C00D002C0C52 /* UserModel.swift */,
+				845BA63121B9579D002C0C52 /* HoldImageModel.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 		84A916E121AFC95700F1D51D /* Login */ = {
@@ -375,6 +413,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				84A916ED21B04A6200F1D51D /* AuthenticationViewModel.swift in Sources */,
+				845BA63221B9579D002C0C52 /* HoldImageModel.swift in Sources */,
 				84A916E721AFCA7D00F1D51D /* RootViewController.swift in Sources */,
 				84002868219CA6250005ADA9 /* LoginViewController.swift in Sources */,
 				84002866219CA6250005ADA9 /* AppDelegate.swift in Sources */,
@@ -384,6 +423,7 @@
 				84A916E021AD43DA00F1D51D /* Router.swift in Sources */,
 				84A916DC21AD3D2300F1D51D /* APIManager.swift in Sources */,
 				84A916DA21AD3CA800F1D51D /* Coordinator.swift in Sources */,
+				845BA62F21B8C00D002C0C52 /* UserModel.swift in Sources */,
 				84A916E921AFCAD200F1D51D /* RootViewModel.swift in Sources */,
 				84A916E521AFC9D300F1D51D /* OnboardingViewController.swift in Sources */,
 				8400286E219CA6250005ADA9 /* Hold.xcdatamodeld in Sources */,

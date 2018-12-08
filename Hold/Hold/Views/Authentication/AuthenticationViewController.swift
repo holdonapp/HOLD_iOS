@@ -8,8 +8,10 @@
 
 import Foundation
 import UIKit
+import NVActivityIndicatorView
+import Parse
 
-class AuthenticationViewController: UIViewController {
+class AuthenticationViewController: UIViewController, NVActivityIndicatorViewable {
     
     @IBOutlet weak var usernameTextField: UITextField!
     
@@ -20,7 +22,7 @@ class AuthenticationViewController: UIViewController {
     @IBOutlet weak var forgotPasswordButtonOutlet: UIButton!
     
     var viewModel: AuthenticationViewModel? {
-        didSet{
+        didSet {
             guard let _ = viewModel else {return}
         }
     }
@@ -32,25 +34,35 @@ class AuthenticationViewController: UIViewController {
         self.setupButtons()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        self.usernameTextField.becomeFirstResponder()
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.cleanUp()
     }
     
     @IBAction func loginButtonPressed(_ sender: Any) {
-        let overlay = self.createLoaderView()
-        self.view.addSubview(overlay)
+        self.view.endEditing(true)
         
+        // Display Loader
+        let data = self.createLoaderViewData()
+        NVActivityIndicatorPresenter.sharedInstance.startAnimating(data, nil)
+  
         guard let username = self.usernameTextField.text, let password = self.passwordTextField.text else {return}
         self.viewModel?
             .login(username, password: password, completion: { [weak self] (user, error) in
                 DispatchQueue.main.async {
-                    overlay.removeFromSuperview()
+                    
+                    // Collapse Loader
+                    NVActivityIndicatorPresenter.sharedInstance.stopAnimating(nil)
                     
                     switch error == nil {
                     case true:
-                        guard let vc = self?.viewModel?.persistHomeViewController() else {return}
-                        self?.navigationController?.pushViewController(vc, animated: true)
+                        guard let u = user else {return}
+                        self?.process(u)
                         
                     case false:
                         guard let err = error as? HoldError else {return}
@@ -98,35 +110,48 @@ extension AuthenticationViewController {
     
     fileprivate func addBottomBorderToTextField(myTextField:UITextField) {
         let bottomLine   = CALayer()
-        bottomLine.frame = CGRect(x      : 0.0,
-                                  y      : myTextField.frame.height - 1,
-                                  width  : self.view.frame.width - 40,
-                                  height : 0.5)
-        
+        bottomLine.frame = CGRect(
+            x      : 0.0,
+            y      : myTextField.frame.height - 1,
+            width  : self.view.frame.width - 40,
+            height : 0.5
+        )
         bottomLine.backgroundColor = UIColor.holdOrange.cgColor
         bottomLine.opacity = 0.6
         myTextField.borderStyle = UITextField.BorderStyle.none
         myTextField.layer.addSublayer(bottomLine)
     }
     
-    private func createLoaderView() -> UIView {
-        let overlay = UIView(frame: self.view.bounds)
-        overlay.backgroundColor = .black
-        overlay.alpha = 0.6
-        
-        let act = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
-        act.style = .whiteLarge
-        act.color = .holdOrange
-        act.center = overlay.center
-        act.startAnimating()
-        overlay.addSubview(act)
-        
-        return overlay
+    private func createLoaderViewData() -> ActivityData {
+        let data = ActivityData(
+            size     : CGSize(width: 50, height: 50),
+            message  : "Authenticating...",
+            type     : .circleStrokeSpin,
+            color    : .holdOrange,
+            textColor: .white
+        )
+        return data
     }
     
     private func cleanUp() {
         self.usernameTextField.text?.removeAll()
         self.passwordTextField.text?.removeAll()
+        
+        if self.isEditing {
+            self.view.endEditing(true)
+        }
+    }
+    
+    private func process(_ user: PFUser) {
+        let userModel = UserModel.init(
+            name             : user.username ?? "N/A",
+            email            : user.email ?? "N/A",
+            profileUrlString : (user["profileImage"] as? PFFileObject)?.url ?? "N/A" ,
+            uploadedPhotos   : []
+        )
+        let homeVM = HomeViewModel(user: userModel)
+        guard let vc = self.viewModel?.persistHomeViewController(viewModel: homeVM) else {return}
+        self.navigationController?.pushViewController(vc, animated: true)
     }
     
     private func show(_ error: HoldError) {

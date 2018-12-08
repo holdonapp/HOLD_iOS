@@ -48,6 +48,13 @@ extension Coordinator {
             completion(user, error)
         }
     }
+    
+    func pullFirstFiftyImages(skip: Int, completion: @escaping ([HoldImageModel], Error?) -> ()) {
+        let api = APIManager()
+        api.pullFirstFiftyImages(skip: skip) { (imageModels, error) in
+            completion(imageModels, error)
+        }
+    }
 
 }
 
