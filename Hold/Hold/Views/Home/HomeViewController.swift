@@ -224,7 +224,7 @@ extension HomeViewController {
     
     private func startImageDetailTimer() {
         self.imageDetailTimer = Timer.scheduledTimer(
-            withTimeInterval: 4.0,
+            withTimeInterval: 2.0,
             repeats: false,
             block: { [weak self] (_) in
                 self?.layoutImageDetailAttributes()
@@ -234,14 +234,16 @@ extension HomeViewController {
     
     private func startImageDetailVanishTimer() {
         self.imageDetailVanishTimer = Timer.scheduledTimer(
-            withTimeInterval: 11.0,
+            withTimeInterval: 10.0,
             repeats: false,
             block: { [weak self] (_) in
                 DispatchQueue.main.async {
                     UIView.animate(
                         withDuration: 2.0,
                         animations: {
-                            self?.imageDetailsView.alpha = 0.0
+                            if self?.detailsAreOpen == false {
+                                self?.imageDetailsView.alpha = 0.0
+                            }
                     })
                 }
         })
@@ -465,8 +467,7 @@ extension HomeViewController {
     
     @objc private func openRightMenu() {
         DispatchQueue.main.async {
-            
-            
+
         }
     }
 }
