@@ -28,6 +28,7 @@ class HomeViewController: UIViewController {
     @IBOutlet weak var imageDetailBlurBackgroundFxView: UIVisualEffectView!
     
     private var currentId: String?
+    private var currentIndex:Int = 0
     
     private let minImageBagCount: Int = 20
     private var skipCount: Int = 0
@@ -288,7 +289,7 @@ extension HomeViewController {
     private func startKenBurnsEffect(withCurrent imageView: UIImageView, initialImage: Bool) {
         self.currentImage = imageView
         
-        let duration: TimeInterval = initialImage ? 1.0 : 15.0
+        let duration: TimeInterval = initialImage ? 1.0 : 20.0
         UIView.animate(
             withDuration: duration,
             animations: {
@@ -323,20 +324,27 @@ extension HomeViewController {
             self.skipCount += 20
             self.pullImages(skip: self.skipCount)
         } else {
+            self.currentIndex += 1
             let bag = self.currentImageBag
             guard let upcomingImage = bag.first?.image else {return}
             self.upcomingImage.image = upcomingImage
             self.mediaImageView.addSubview(self.upcomingImage)
             
             UIView.animate(
-                withDuration: 1.0,
+                withDuration: 2.0,
                 animations: {
-                    self.imageDetailsView.alpha = 0
-                    self.currentImage.alpha = 0
-                    self.upcomingImage.alpha = 1
+                    self.imageDetailsView.alpha = 0.0
             },
                 completion: { [weak self] (_) in
-                    self?.processNew(images: bag, inTransition: true)
+                    UIView.animate(
+                        withDuration: 1.0,
+                        animations: {
+                            self?.currentImage.alpha = 0
+                            self?.upcomingImage.alpha = 1
+                    },
+                        completion: { [weak self] (_) in
+                            self?.processNew(images: bag, inTransition: true)
+                    })
             })
         }
     }
