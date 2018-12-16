@@ -41,6 +41,7 @@ class HomeViewController: UIViewController {
     private var imageDetailTimer: Timer?
     private var imageTransitionTimer: Timer?
     private var imagePrefetchTimer: Timer?
+     private var imageDetailVanishTimer: Timer?
     
     private var currentImageBag: [HoldImageModel] = []
     private var primaryImageBag: [HoldImageModel] = []
@@ -170,6 +171,7 @@ extension HomeViewController {
     private func processNew(images: [HoldImageModel], inTransition: Bool) {
         DispatchQueue.main.async {
             self.startImageDetailTimer()
+            self.startImageDetailVanishTimer()
             self.startImageTransitionTimer()
             
             self.currentImageBag = images
@@ -200,9 +202,24 @@ extension HomeViewController {
         })
     }
     
+    private func startImageDetailVanishTimer() {
+        self.imageDetailVanishTimer = Timer.scheduledTimer(
+            withTimeInterval: 11.0,
+            repeats: false,
+            block: { [weak self] (_) in
+                DispatchQueue.main.async {
+                    UIView.animate(
+                        withDuration: 2.0,
+                        animations: {
+                            self?.imageDetailsView.alpha = 0.0
+                    })
+                }
+        })
+    }
+    
     private func startImageTransitionTimer() {
         self.imageDetailTimer = Timer.scheduledTimer(
-            withTimeInterval: 5.0,
+            withTimeInterval: 15.0,
             repeats: false,
             block: { [weak self] (_) in
                 DispatchQueue.main.async {
@@ -215,6 +232,7 @@ extension HomeViewController {
     private func stopTimers() {
         self.imageTransitionTimer?.invalidate()
         self.imageDetailTimer?.invalidate()
+        self.imageDetailVanishTimer?.invalidate()
     }
     
     private func displayImageDetails(open: Bool) {
@@ -331,20 +349,14 @@ extension HomeViewController {
             self.mediaImageView.addSubview(self.upcomingImage)
             
             UIView.animate(
-                withDuration: 2.0,
+                withDuration: 1.0,
                 animations: {
-                    self.imageDetailsView.alpha = 0.0
+                    self.imageDetailsView.alpha = 0
+                    self.currentImage.alpha = 0
+                    self.upcomingImage.alpha = 1
             },
                 completion: { [weak self] (_) in
-                    UIView.animate(
-                        withDuration: 1.0,
-                        animations: {
-                            self?.currentImage.alpha = 0
-                            self?.upcomingImage.alpha = 1
-                    },
-                        completion: { [weak self] (_) in
-                            self?.processNew(images: bag, inTransition: true)
-                    })
+                    self?.processNew(images: bag, inTransition: true)
             })
         }
     }
