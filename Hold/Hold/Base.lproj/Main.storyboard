@@ -217,13 +217,13 @@
                                                 <rect key="frame" x="0.0" y="0.0" width="68" height="120"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="@Username" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QjF-hm-9Ar">
-                                                        <rect key="frame" x="3" y="52.333333333333371" width="61" height="12.666666666666671"/>
+                                                        <rect key="frame" x="3" y="52" width="65" height="13"/>
                                                         <fontDescription key="fontDescription" name="GillSans-Light" family="Gill Sans" pointSize="11"/>
                                                         <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="contentSelectorPurple" translatesAutoresizingMaskIntoConstraints="NO" id="Zli-i0-qvz">
-                                                        <rect key="frame" x="16" y="8" width="36" height="36.333333333333336"/>
+                                                        <rect key="frame" x="8" y="8" width="36" height="36.333333333333336"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="36.200000000000003" id="KPe-wG-qpy"/>
                                                             <constraint firstAttribute="height" constant="36.200000000000003" id="Rwb-uE-6Nk"/>
@@ -234,10 +234,10 @@
                                                 <constraints>
                                                     <constraint firstItem="QjF-hm-9Ar" firstAttribute="top" secondItem="Zli-i0-qvz" secondAttribute="bottom" constant="8" id="6t1-rQ-bMg"/>
                                                     <constraint firstAttribute="width" constant="68" id="Luw-a8-vCI"/>
-                                                    <constraint firstAttribute="trailing" secondItem="QjF-hm-9Ar" secondAttribute="trailing" constant="4" id="Ouh-ti-GNw"/>
+                                                    <constraint firstAttribute="trailing" secondItem="QjF-hm-9Ar" secondAttribute="trailing" id="Ouh-ti-GNw"/>
                                                     <constraint firstItem="QjF-hm-9Ar" firstAttribute="leading" secondItem="Zi4-X1-syU" secondAttribute="leading" constant="3" id="avZ-t3-gu8"/>
                                                     <constraint firstItem="Zli-i0-qvz" firstAttribute="top" secondItem="Zi4-X1-syU" secondAttribute="top" constant="8" id="bjm-fu-Gqt"/>
-                                                    <constraint firstItem="Zli-i0-qvz" firstAttribute="centerX" secondItem="Zi4-X1-syU" secondAttribute="centerX" id="nqK-cR-xhA"/>
+                                                    <constraint firstItem="Zli-i0-qvz" firstAttribute="centerX" secondItem="Zi4-X1-syU" secondAttribute="centerX" constant="-8" id="nqK-cR-xhA"/>
                                                 </constraints>
                                             </view>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Floating through the clouds en route to nyc for some legendary slices of pizza. Pizza is amazing. Never Forget !" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PxA-Tu-qGT">

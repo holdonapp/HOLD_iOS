@@ -22,9 +22,6 @@ extension APIManager {
     func login(username: String, password: String, completion: @escaping (PFUser?, Error?) -> ()) {
         PFUser.logInWithUsername(inBackground: username, password: password
         ) { user, error in
-            
-            print("Hit")
-            
             let canProceed = (error == nil && user != nil) ? true : false
             switch canProceed {
             case true:
@@ -40,9 +37,11 @@ extension APIManager {
     }
     
     func pullFirstFiftyImages(skip: Int, completion: @escaping ([HoldImageModel], Error?) -> ()) {
+        print("SKIP - \(skip)")
+        
         let query = PFQuery(className: "TopLevelHashtags")
-        query.limit = 50
-        query.skip = skip
+        query.skip = skip 
+        query.limit = 20
         query.findObjectsInBackground { (objects, error) in
             let canProceed = (error == nil && objects != nil) ? true : false
             switch canProceed {
@@ -50,15 +49,19 @@ extension APIManager {
                 guard let objects = objects else {return}
                 completion(objects
                     .map({obj -> HoldImageModel in
+                        let id = obj.objectId ?? ""
                         let urlString = (obj["image"] as? PFFileObject)?.url ?? ""
                         let primaryHashTag = obj["hashtagId"] as? String ?? ""
                         let secondaryHashtag = obj["secondaryHashtagId"] as? String ?? ""
+                        let description = obj["description"] as? String ?? ""
                         let postedByUserObjectID = obj["uploadedByUsername"] as? String ?? "Admin"
                         
                         return HoldImageModel.init(
-                            urlString: urlString,
+                            id: id,
+                            image: nil,
+                            imageUrlString: urlString,
                             primaryHashTag: primaryHashTag,
-                            secondaryHashtag: secondaryHashtag,
+                            secondaryHashtag: secondaryHashtag, description: description,
                             postedByUserObjectID: postedByUserObjectID
                         )
                     }), nil)

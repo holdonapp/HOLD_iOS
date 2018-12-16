@@ -10,6 +10,8 @@ import Foundation
 import UIKit
 import NVActivityIndicatorView
 
+typealias ImageDisplay = (description: String, image: UIImage?, id: String)
+
 class HomeViewController: UIViewController {
     
     @IBOutlet weak var mediaView: UIView!
@@ -25,9 +27,13 @@ class HomeViewController: UIViewController {
     @IBOutlet weak var imageDetailViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageDetailBlurBackgroundFxView: UIVisualEffectView!
     
+    private var currentId: String?
+    
+    private let minImageBagCount: Int = 20
+    private var skipCount: Int = 0
+    
     private let collapsedHeightConstant: CGFloat = 50
     private let collapsedEdgeConstraintConstant: CGFloat = 45
-    
     private let openHeightConstant: CGFloat = 120
     private let openEdgeConstraintConstant: CGFloat = 10
     
@@ -35,17 +41,26 @@ class HomeViewController: UIViewController {
     private var imageTransitionTimer: Timer?
     private var imagePrefetchTimer: Timer?
     
-    private var currentImageBag: [UIImage] = []
-    private var upcomingImageBag: [UIImage] = []
-    private var currentImage: UIImage?
-    private var upcomingImage: UIImage?
+    private var currentImageBag: [HoldImageModel] = []
+    private var primaryImageBag: [HoldImageModel] = []
+    private var imageModelbag: [ImageDisplay] = []
+    
+    private var currentImage: UIImageView!
+    private var upcomingImage: UIImageView!
+    
+    private var startingPoint: CGAffineTransform!
+    
+    private var shouldChangeImage: Bool = false
+    private var detailsAreOpen: Bool = false
     
     var viewModel: HomeViewModel?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setup()
-        self.pullImages()
+        self.pullImages(skip: self.skipCount)
+        self.addGestureToDetails()
+        self.layoutBarButtons()
     }
     
     deinit {
@@ -56,23 +71,36 @@ class HomeViewController: UIViewController {
 extension HomeViewController {
     
     private func setup() {
+        self.startingPoint = CGAffineTransform(translationX: -10, y: 10).concatenating(CGAffineTransform(scaleX: 1.3, y: 1.3))
+        
+        self.upcomingImage = UIImageView(frame: self.mediaImageView.bounds)
+        self.upcomingImage.contentMode = .scaleAspectFill
+        self.upcomingImage.alpha = 0
+        self.upcomingImage.transform = self.startingPoint
+        self.upcomingImage.clipsToBounds = true
+        
+        self.currentImage = UIImageView(frame: self.mediaImageView.bounds)
+        self.currentImage.contentMode = .scaleAspectFill
+        self.currentImage.alpha = 0
+        self.currentImage.transform = self.startingPoint
+        self.currentImage.clipsToBounds = true
+        
         self.imageDetailsView.alpha = 0
-        self.imageDetailsView.layer.cornerRadius = 15
+        self.imageDetailsView.layer.cornerRadius = 25
+        
+        self.imageDetailBlurBackgroundFxView.layer.cornerRadius = 25
+        
         self.imageDetailUserProfileImageView.layer.cornerRadius = self.imageDetailUserProfileImageView.bounds.width / 2
-        self.imageDetailBlurBackgroundFxView.layer.cornerRadius = 15
     }
     
-    private func pullImages(){
-        
-        // Display Loader
+    private func pullImages(skip: Int){
         let data = self.createLoaderViewData()
         NVActivityIndicatorPresenter.sharedInstance.startAnimating(data, nil)
         
-        self.viewModel?.pullFirstFiftyImages(skip: 0, completion: { (models, error) in
-            
-            // Collapse Loader
-            NVActivityIndicatorPresenter.sharedInstance.stopAnimating(nil)
-            
+        self.currentImageBag.removeAll()
+        self.imageModelbag.removeAll()
+        
+        self.viewModel?.pullFirstFiftyImages(skip: skip, completion: { (models, error) in
             let canProceed = (error == nil && !models.isEmpty) ? true : false
             switch canProceed {
             case true:
@@ -84,46 +112,108 @@ extension HomeViewController {
         })
     }
     
-    private func beginImageCycling(with bag: [HoldImageModel]){
+    private func layoutBarButtons() {
+        let right = UIBarButtonItem(image: #imageLiteral(resourceName: "contentSelectorPurple"), landscapeImagePhone: nil, style: .plain, target: self, action: #selector(self.openRightMenu))
+        self.navigationItem.rightBarButtonItems = [right]
+    }
+    
+    private func createLoaderViewData() -> ActivityData {
+        let data = ActivityData(
+            size     : CGSize(width: 50, height: 50),
+            message  : "Loading Images...",
+            type     : .circleStrokeSpin,
+            color    : .holdOrange,
+            textColor: .white
+        )
+        return data
+    }
+    
+    private func beginImageCycling(with bag: [HoldImageModel]) {
+        guard let dataArray = self.viewModel?.convert(bag), !dataArray.isEmpty else {return}
         
-        
-        DispatchQueue.main.async {
-            guard let model = bag.first else {return}
-            let imgView = UIImageView(frame: self.mediaImageView.frame)
-            self.mediaImageView.addSubview(imgView)
-            imgView.download(link: model.urlString, completion: { [weak self] _ in
-                self?.startImageTransitionTimer()
-                self?.startImageDetailTimer()
-                self?.startImagePrefetchTimer()
+        let images = dataArray.isEmpty ? [] : dataArray
+            .map({ (data) -> PresentingImageModel? in
+                let result = PresentingImageModel.init(image: UIImage(data: data.data)!, id: data.id)
+                return result
             })
+            .filter({ $0 != nil })
+            .map({ return $0! })
+        
+        let newModels = bag.map { (model) -> HoldImageModel in
+            var m = model
+            m.image = images.filter({$0.id == model.id}).first?.image
+            return m
+        }
+        
+        self.imageModelbag = newModels
+            .map({ img -> ImageDisplay in
+                let desc = img.description == "" ? img.primaryHashTag : img.description
+                let details = ImageDisplay(desc, #imageLiteral(resourceName: "person-placeholder"), img.id)
+                return details
+            })
+        
+        NVActivityIndicatorPresenter.sharedInstance.stopAnimating(nil)
+        
+        switch images.isEmpty {
+        case true:
+            print("Alert - No images to show at this time")
+            
+        case false:
+            self.primaryImageBag = newModels
+            
+            self.processNew(
+                images: newModels, inTransition: false)
+        }
+    }
+    
+    private func processNew(images: [HoldImageModel], inTransition: Bool) {
+        DispatchQueue.main.async {
+            self.startImageDetailTimer()
+            self.startImageTransitionTimer()
+            
+            self.currentImageBag = images
+            self.currentId = images.first?.id
+            
+            let upcomingImg = self.upcomingImage.image
+            let nextImg = images.first?.image == upcomingImg ? upcomingImg : images.first?.image
+            self.currentImage.image = nextImg
+            
+            if inTransition {
+                self.currentImage.transform = self.startingPoint
+                self.currentImage.alpha = 1
+                self.upcomingImage.alpha = 0
+                self.upcomingImage.removeFromSuperview()
+            }
+            self.mediaImageView.addSubview(self.currentImage)
+            self.startKenBurnsEffect(withCurrent: self.currentImage, initialImage: !inTransition)
         }
     }
     
     private func startImageDetailTimer() {
         self.imageDetailTimer = Timer.scheduledTimer(
-            withTimeInterval: 3.0,
+            withTimeInterval: 4.0,
             repeats: false,
             block: { [weak self] (_) in
+                self?.layoutImageDetailAttributes()
                 self?.displayImageDetails(open: false)
         })
     }
     
     private func startImageTransitionTimer() {
         self.imageDetailTimer = Timer.scheduledTimer(
-            withTimeInterval: 9.0,
+            withTimeInterval: 5.0,
             repeats: false,
             block: { [weak self] (_) in
-                self?.displayImageDetails(open: false)
+                DispatchQueue.main.async {
+                    self?.shouldChangeImage = true
+                    self?.stopTimers()
+                }
         })
     }
     
-    private func startImagePrefetchTimer() {
-        self.imageDetailTimer = Timer.scheduledTimer(
-            withTimeInterval: 7.0,
-            repeats: false,
-            block: { [weak self] (_) in
-                self?.displayImageDetails(open: false)
-        })
+    private func stopTimers() {
+        self.imageTransitionTimer?.invalidate()
+        self.imageDetailTimer?.invalidate()
     }
     
     private func displayImageDetails(open: Bool) {
@@ -147,13 +237,10 @@ extension HomeViewController {
                 animations: { [weak self] in
                     guard let this = self else {return}
                     this.imageDetailUsernameLabel.isHidden = false
+                    this.imageDetailsView.alpha = 1
                     this.imageDetailViewLeadingConstraint.constant = this.openEdgeConstraintConstant
+                    this.imageDetailViewTrailingConstraint.constant = this.openEdgeConstraintConstant
                     this.imageDetailViewHeightConstraint.constant = this.openHeightConstant
-                },
-                completion: { [weak self] _ in
-                    UIView.animate(withDuration: 2.0, animations: {
-                        self?.imageDetailsView.alpha = 1
-                    })
                 }
             )
         }
@@ -162,7 +249,7 @@ extension HomeViewController {
     private func collapsedImageDetails() {
         DispatchQueue.main.async {
             UIView.animate(
-                withDuration: 1.0,
+                withDuration: 2.0,
                 delay: 0.0,
                 usingSpringWithDamping: 0.0,
                 initialSpringVelocity: 0.0,
@@ -170,35 +257,127 @@ extension HomeViewController {
                 animations: { [weak self] in
                     guard let this = self else {return}
                     this.imageDetailUsernameLabel.isHidden = true
-                    this.imageDetailViewLeadingConstraint.constant = this.collapsedEdgeConstraintConstant
-                    this.imageDetailViewHeightConstraint.constant = this.collapsedHeightConstant
                 },
                 completion: { [weak self] _ in
                     UIView.animate(withDuration: 2.0, animations: {
-                        self?.imageDetailsView.alpha = 1
+                        guard let this = self else {return}
+                        this.imageDetailUsernameLabel.isHidden = false
+                        this.imageDetailsView.alpha = 1
+                        this.imageDetailViewLeadingConstraint.constant = this.collapsedEdgeConstraintConstant
+                        this.imageDetailViewTrailingConstraint.constant = this.collapsedEdgeConstraintConstant
+                        this.imageDetailViewHeightConstraint.constant = this.collapsedHeightConstant
                     })
                 }
             )
         }
     }
     
-    private func stopImageDetailTimer() {
+    private func layoutImageDetailAttributes() {
+        print(self.currentId ?? "")
         
+        DispatchQueue.main.async {
+            let model = self.imageModelbag.filter({$0.id == self.currentId})
+            self.imageDetailUserProfileImageView.image = model.first?.image
+            self.imageDetailUsernameLabel.text = ""
+            self.imageDetailDescriptionLabel.text = model.first?.description
+            self.imageDetailPrimaryHashtagLabel.text = model.first?.description
+        }
     }
     
-    private func resetImageDetailTimer() {
+    
+    private func startKenBurnsEffect(withCurrent imageView: UIImageView, initialImage: Bool) {
+        self.currentImage = imageView
         
+        let duration: TimeInterval = initialImage ? 1.0 : 15.0
+        UIView.animate(
+            withDuration: duration,
+            animations: {
+                switch initialImage || self.shouldChangeImage {
+                case false:
+                    self.currentImage.transform = self.startingPoint
+                case true:
+                    self.currentImage.alpha = 1
+                }
+        },
+            completion: { [weak self] (_) in
+                switch self?.shouldChangeImage == true {
+                case true:
+                    self?.shouldChangeImage = false
+                    self?.imageViewMetamorphosis()
+                    
+                case false:
+                    self?.recursiveMetamorphosis()
+                }
+        })
     }
     
-    private func createLoaderViewData() -> ActivityData {
-        let data = ActivityData(
-            size     : CGSize(width: 50, height: 50),
-            message  : "Loading Images...",
-            type     : .circleStrokeSpin,
-            color    : .holdOrange,
-            textColor: .white
-        )
-        return data
+    private func imageViewMetamorphosis() {
+        print(self.currentImageBag.count)
+        
+        self.currentImageBag.removeFirst()
+        self.imageModelbag.removeFirst()
+        
+        if self.currentImageBag.count == 0 {
+            self.stopTimers()
+            self.imageDetailsView.alpha = 0
+            self.skipCount += 20
+            self.pullImages(skip: self.skipCount)
+        } else {
+            let bag = self.currentImageBag
+            guard let upcomingImage = bag.first?.image else {return}
+            self.upcomingImage.image = upcomingImage
+            self.mediaImageView.addSubview(self.upcomingImage)
+            
+            UIView.animate(
+                withDuration: 1.0,
+                animations: {
+                    self.imageDetailsView.alpha = 0
+                    self.currentImage.alpha = 0
+                    self.upcomingImage.alpha = 1
+            },
+                completion: { [weak self] (_) in
+                    self?.processNew(images: bag, inTransition: true)
+            })
+        }
+    }
+    
+    private func recursiveMetamorphosis() {
+        UIView.animate(
+            withDuration: 15.0,
+            animations: {
+                self.currentImage.transform = .identity
+        },
+            completion: { [weak self] (_) in
+                guard let imgView = self?.currentImage else {return}
+                self?.startKenBurnsEffect(withCurrent: imgView, initialImage: false)
+        })
+    }
+    
+    private func addGestureToDetails() {
+        let tap = UITapGestureRecognizer(target: self, action: #selector(self.openDetails))
+        self.imageDetailsView.addGestureRecognizer(tap)
+    }
+    
+    @objc private func openDetails() {
+        DispatchQueue.main.async {
+            switch self.detailsAreOpen {
+            case true:
+                self.shouldChangeImage = true
+                self.detailsAreOpen = false
+                self.collapsedImageDetails()
+                
+            case false:
+                self.shouldChangeImage = false
+                self.detailsAreOpen = true
+                self.openImageDetails()
+            }
+        }
+    }
+    
+    @objc private func openRightMenu() {
+        DispatchQueue.main.async {
+  
+        }
     }
     
 }

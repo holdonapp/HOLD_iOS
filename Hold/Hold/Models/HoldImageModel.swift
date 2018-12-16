@@ -7,10 +7,14 @@
 //
 
 import Foundation
+import UIKit
 
 struct HoldImageModel {
-    var urlString: String
+    var id: String
+    var image: UIImage?
+    var imageUrlString: String?
     var primaryHashTag: String
     var secondaryHashtag: String
+    let description: String
     var postedByUserObjectID: String
 }
