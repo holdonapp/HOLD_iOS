@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.23.1" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina5_9" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.16.1"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -217,7 +217,7 @@
                                                 <rect key="frame" x="0.0" y="0.0" width="68" height="120"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="@Username" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QjF-hm-9Ar">
-                                                        <rect key="frame" x="3" y="52" width="65" height="13"/>
+                                                        <rect key="frame" x="3" y="52.333333333333371" width="65" height="12.666666666666671"/>
                                                         <fontDescription key="fontDescription" name="GillSans-Light" family="Gill Sans" pointSize="11"/>
                                                         <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -275,13 +275,37 @@
                                             <constraint firstAttribute="trailing" secondItem="ecH-MW-D3L" secondAttribute="trailing" id="yPH-V2-aEe"/>
                                         </constraints>
                                     </view>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nxk-ux-KjZ">
+                                        <rect key="frame" x="307" y="113.66666666666669" width="60" height="585"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="60" id="LBr-mY-glK"/>
+                                            <constraint firstAttribute="height" constant="585" id="UE0-uY-dAc"/>
+                                        </constraints>
+                                        <connections>
+                                            <action selector="rightButtonPressed:" destination="gB8-Tx-WId" eventType="touchUpInside" id="GGA-bX-4om"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F8v-Ie-GQD">
+                                        <rect key="frame" x="8" y="113.66666666666669" width="60" height="585"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="60" id="MeI-aB-VE6"/>
+                                            <constraint firstAttribute="height" constant="585" id="WFQ-MD-lgX"/>
+                                        </constraints>
+                                        <connections>
+                                            <action selector="leftButtonPressed:" destination="gB8-Tx-WId" eventType="touchUpInside" id="PfX-94-0BB"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
+                                    <constraint firstItem="F8v-Ie-GQD" firstAttribute="leading" secondItem="Na4-E4-sXt" secondAttribute="leading" constant="8" id="9d7-OU-FYl"/>
                                     <constraint firstAttribute="trailing" secondItem="E1B-bA-807" secondAttribute="trailing" constant="45" id="C3r-vW-rGv"/>
+                                    <constraint firstItem="F8v-Ie-GQD" firstAttribute="centerY" secondItem="Na4-E4-sXt" secondAttribute="centerY" id="FT0-61-KwP"/>
                                     <constraint firstItem="E1B-bA-807" firstAttribute="centerX" secondItem="Na4-E4-sXt" secondAttribute="centerX" id="IcE-tk-ZvE"/>
                                     <constraint firstAttribute="bottom" secondItem="E1B-bA-807" secondAttribute="bottom" constant="42" id="LXB-8W-nql"/>
                                     <constraint firstItem="E1B-bA-807" firstAttribute="leading" secondItem="Na4-E4-sXt" secondAttribute="leading" constant="45" id="aow-Sb-Lha"/>
+                                    <constraint firstItem="nxk-ux-KjZ" firstAttribute="centerY" secondItem="Na4-E4-sXt" secondAttribute="centerY" id="iWe-Ce-wZc"/>
+                                    <constraint firstAttribute="trailing" secondItem="nxk-ux-KjZ" secondAttribute="trailing" constant="8" id="u4V-2a-pPw"/>
                                 </constraints>
                             </view>
                         </subviews>

@@ -9,6 +9,8 @@
 import Foundation
 import UIKit
 import NVActivityIndicatorView
+import RxCocoa
+import RxSwift
 
 typealias ImageDisplay = (description: String, image: UIImage?, id: String)
 
@@ -29,6 +31,7 @@ class HomeViewController: UIViewController {
     
     private var currentId: String?
     private var currentIndex:Int = 0
+    private var cancel: Bool = false
     
     private let minImageBagCount: Int = 20
     private var skipCount: Int = 0
@@ -41,7 +44,7 @@ class HomeViewController: UIViewController {
     private var imageDetailTimer: Timer?
     private var imageTransitionTimer: Timer?
     private var imagePrefetchTimer: Timer?
-     private var imageDetailVanishTimer: Timer?
+    private var imageDetailVanishTimer: Timer?
     
     private var currentImageBag: [HoldImageModel] = []
     private var primaryImageBag: [HoldImageModel] = []
@@ -62,11 +65,35 @@ class HomeViewController: UIViewController {
         self.setup()
         self.pullImages(skip: self.skipCount)
         self.addGestureToDetails()
+        self.addGestureToView()
+        self.swipeGestureView()
         self.layoutBarButtons()
     }
     
     deinit {
         print("Deinit success - \(self.description)")
+    }
+    
+    
+    @IBAction func leftButtonPressed(_ sender: Any) {
+        if self.currentIndex != 0 {
+            self.currentIndex -= 1
+            var bag = self.primaryImageBag
+            
+            let element = bag.remove(at: self.currentIndex)
+            self.currentImageBag.insert(element, at: 0)
+            self.processNew(images: self.currentImageBag, inTransition: true)
+        }
+    }
+    
+    @IBAction func rightButtonPressed(_ sender: Any) {
+        self.currentIndex += 1
+        var bag = self.primaryImageBag
+        
+        let element = bag.remove(at: self.currentIndex)
+        self.currentImageBag.removeFirst()
+        self.currentImageBag.insert(element, at: 0)
+        self.processNew(images: self.currentImageBag, inTransition: true)
     }
 }
 
@@ -122,7 +149,7 @@ extension HomeViewController {
     private func createLoaderViewData() -> ActivityData {
         let data = ActivityData(
             size     : CGSize(width: 50, height: 50),
-            message  : "Loading Images...",
+            message  : "",
             type     : .circleStrokeSpin,
             color    : .holdOrange,
             textColor: .white
@@ -187,8 +214,11 @@ extension HomeViewController {
                 self.upcomingImage.alpha = 0
                 self.upcomingImage.removeFromSuperview()
             }
-            self.mediaImageView.addSubview(self.currentImage)
-            self.startKenBurnsEffect(withCurrent: self.currentImage, initialImage: !inTransition)
+            
+            if self.cancel == false {
+                self.mediaImageView.addSubview(self.currentImage)
+                self.startKenBurnsEffect(withCurrent: self.currentImage, initialImage: !inTransition)
+            }
         }
     }
     
@@ -336,6 +366,8 @@ extension HomeViewController {
         self.currentImageBag.removeFirst()
         self.imageModelbag.removeFirst()
         
+        self.currentIndex += 1
+        
         if self.currentImageBag.count == 0 {
             self.stopTimers()
             self.imageDetailsView.alpha = 0
@@ -378,6 +410,43 @@ extension HomeViewController {
         self.imageDetailsView.addGestureRecognizer(tap)
     }
     
+    private func addGestureToView() {
+        let long = UILongPressGestureRecognizer(target: self, action: #selector(self.scanThroughImages))
+        self.view.addGestureRecognizer(long)
+    }
+    
+    private func swipeGestureView() {
+        let long = UISwipeGestureRecognizer(target: self, action: #selector(self.swipeView))
+        self.view.addGestureRecognizer(long)
+    }
+    
+    
+    @objc private func scanThroughImages() {
+        DispatchQueue.main.async {
+            self.cancel = true
+            
+            self.iterateThrough(images: self.primaryImageBag)
+        }
+    }
+    
+    @objc private func swipeView() {
+        DispatchQueue.main.async {
+            print("Liked Image")
+        }
+    }
+    
+    private func iterateThrough(images: [HoldImageModel]) {
+        var bag = images
+
+        self.currentImage.image = bag.first?.image
+        
+        UIView.animate(withDuration: 0.3, animations: {
+            bag.removeFirst()
+            
+            self.iterateThrough(images: bag)
+        })
+    }
+    
     @objc private func openDetails() {
         DispatchQueue.main.async {
             switch self.detailsAreOpen {
@@ -396,8 +465,8 @@ extension HomeViewController {
     
     @objc private func openRightMenu() {
         DispatchQueue.main.async {
-  
+            
+            
         }
     }
-    
 }

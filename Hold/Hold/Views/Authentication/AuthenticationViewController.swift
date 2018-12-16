@@ -125,7 +125,7 @@ extension AuthenticationViewController {
     private func createLoaderViewData() -> ActivityData {
         let data = ActivityData(
             size     : CGSize(width: 50, height: 50),
-            message  : "Authenticating...",
+            message  : "",
             type     : .circleStrokeSpin,
             color    : .holdOrange,
             textColor: .white

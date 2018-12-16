@@ -51,15 +51,4 @@ extension HomeViewModel {
         return dataArray
     }
     
-//    func new(from displayModel: [ImageDisplay], and imageModels: [HoldImageModel]) -> [ImageDisplay] {
-//        return imageModels
-//            .filter({
-//                $0.primaryHashTag ==
-//            })
-//            .map({ (display) -> ImageDisplay in
-//            
-//        })
-//        
-//    }
-    
 }
