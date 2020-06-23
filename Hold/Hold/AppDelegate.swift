@@ -8,20 +8,22 @@
 
 import UIKit
 import CoreData
-
+import Parse
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
+    
     var window: UIWindow?
     
     
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
         let parseConfig = ParseClientConfiguration {
-            $0.applicationId = "parseAppId"
-            $0.clientKey = "parseClientKey"
-            $0.server = "parseServerUrlString"
+            $0.applicationId = "HOLD123"
+            $0.clientKey = "HOLD12345"
+            $0.server = "https://hold-ios.herokuapp.com/parse"
         }
         Parse.initialize(with: parseConfig)
         
