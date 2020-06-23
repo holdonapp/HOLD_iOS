@@ -1,8 +1,7 @@
-//
 //  ViewController.swift
 //  Hold
 //
-//  Created by Admin on 11/14/18.
+//  Created by Miles Fishman on 11/14/18.
 //  Copyright © 2018 Hold Inc. All rights reserved.
 //
 
@@ -11,6 +10,8 @@ import RxSwift
 import RxCocoa
 import Parse
 
+// MARK: - Model
+
 class ImageObject {
     var objectId: String = ""
     var description: String?
@@ -18,10 +19,10 @@ class ImageObject {
     var secondaryHashtagId: String = ""
     var uploadedByUsername: String?
     
-    /// Image Object
+    /// Image File Object
     var image: PFFileObject
     
-    /// Local Initialization Only
+    /// Client Side Initialization Only
     var localImage: Data?
     
     init(
@@ -42,11 +43,8 @@ class ImageObject {
     
     func fetchImageData(_ completion: @escaping (Data) -> Void) {
         image.getDataInBackground { [weak self] (data, error) in
-            guard let data = data else {
-                return
-            }
+            guard let data = data else { return }
             self?.localImage = data
-            print("didIt")
             completion(data)
         }
     }
@@ -74,23 +72,117 @@ class ImageObject {
     }
 }
 
+// MARK: - Lifecycle
+
 class ViewController: UIViewController {
     
     @IBOutlet weak var imageViewOne: UIImageView!
     @IBOutlet weak var imageViewTwo: UIImageView!
     
-    typealias ImagePair = (img1: UIImage, img2: UIImage)
-    
-    var position: Int = 0
-    var managedHashtags: [String] = []
-    var items = BehaviorRelay<[ImageObject]>(value: [])
     var currentIndex: Int = 0
+    var currentTag: String = "TopLevelHashtags"
+    var items = BehaviorRelay<[ImageObject]>(value: [])
     
+    private var dismissingModal: Bool = false
+    private var timer: Timer?
     private let disposeBag = DisposeBag()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        bind()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        guard !dismissingModal else {
+            startTimer(); return
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        dismissingModal = true
+    }
+    
+    @IBAction func topButtonPressed(_ sender: Any) {
+        stopTimer()
+        let sb = UIStoryboard(name: "Main", bundle: nil)
+        guard let vc = sb.instantiateViewController(withIdentifier: "slideshow") as? ViewController else { return }
+        present(vc, animated: true)
+    }
+    
+    @IBAction func bottomButtonPressed(_ sender: Any) {
+        guard presentingViewController == nil else {
+            stopTimer()
+            dismiss(animated: true); return
+        }
+    }
+    
+    @IBAction func leftButtonPressed(_ sender: Any) {
+        updateIndex(onNext: false)
+    }
+    
+    @IBAction func rightButtonPressed(_ sender: Any) {
+        updateIndex(onNext: true)
+    }
+}
+
+// MARK: - Private Helpers
+
+private extension ViewController {
+    func transitionImages(with newData: Data) {
+        let newImage = UIImage(data: newData)
+        self.imageViewOne.alpha == 1
+            ? (self.imageViewTwo.image = newImage) : self.imageViewTwo.alpha == 1
+            ? (self.imageViewOne.image = newImage) : ()
         
+        UIView.animate(withDuration: 1.0, animations: {
+            self.imageViewTwo.alpha = self.imageViewTwo.alpha == 0 ? 1 : 0
+            self.imageViewOne.alpha = self.imageViewOne.alpha == 0 ? 1 : 0
+        })
+    }
+    
+    func displayPhotos(at offsetIndex: Int = 0, onNext: Bool, isFirst: Bool = false) {
+        if let new = items.value[offsetIndex].localImage {
+            guard !isFirst else {
+                self.imageViewOne.image = UIImage(data: new); return
+            }
+            self.transitionImages(with: new)
+        }
+    }
+    
+    func updateIndex(onNext: Bool) {
+        let lastItem: Int = items.value.count - 1,
+        firstItem: Int = 0
+        let pressedBackOnFirstItem: Bool = !onNext && currentIndex == firstItem,
+        pressedNextOnLastItem: Bool = onNext && currentIndex == lastItem
+        
+        if pressedNextOnLastItem {
+            currentIndex = 0
+        } else if pressedBackOnFirstItem {
+            currentIndex = lastItem
+        } else {
+            onNext ? (currentIndex += 1) : (currentIndex -= 1)
+        }
+        displayPhotos(at: currentIndex, onNext: onNext)
+    }
+    
+    func startTimer() {
+        timer = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true, block: { [weak self] (_) in
+            guard let self = self else { return }
+            self.rightButtonPressed(self)
+        })
+        timer?.fire()
+    }
+    
+    func stopTimer() {
+        if timer?.isValid == true {
+            timer?.invalidate()
+        }
+        timer = nil
+    }
+    
+    func bind() {
         imageViewOne.backgroundColor = .clear
         imageViewTwo.backgroundColor = .clear
         imageViewTwo.alpha = 0
@@ -108,10 +200,12 @@ class ViewController: UIViewController {
             .subscribe(
                 onNext: { (objects) in
                     let obs = objects
-                    obs.fetchImages({ [weak self] (values) in
+                    obs.fetchImages({ [weak self] _ in
                         guard let self = self else { return }
-                        print(values.map({ $0.localImage }))
-                        self.displayPhotos(onNext: true, isFirst: true)
+                        DispatchQueue.main.async {
+                            self.displayPhotos(onNext: true, isFirst: true)
+                            self.startTimer()
+                        }
                     })
             },
                 onError: { (error) in
@@ -122,73 +216,13 @@ class ViewController: UIViewController {
             })
             .disposed(by: disposeBag)
     }
-    
-    func transitionImages(with newData: Data) {
-        let newImage = UIImage(data: newData)
-        
-        if imageViewOne.alpha == 1 {
-            imageViewTwo.image = newImage
-        } else if imageViewTwo.alpha == 1 {
-            imageViewOne.image = newImage
-        }
-        UIView.animate(withDuration: 1.0, animations: {
-            self.imageViewOne.alpha = self.imageViewOne.alpha == 0 ? 1 : 0
-        })
-        UIView.animate(withDuration: 1.0, animations: {
-            self.imageViewTwo.alpha = self.imageViewTwo.alpha == 0 ? 1 : 0
-        })
-        print(currentIndex)
-    }
-    
-    func displayPhotos(at offsetIndex: Int = 0, onNext: Bool, isFirst: Bool = false) {
-        let photos = items.value
-        guard let new = photos[offsetIndex].localImage else { return }
-        
-        guard !isFirst else {
-            imageViewOne.image = UIImage(data: new)
-            return
-        }
-        DispatchQueue.main.async {
-            self.transitionImages(with: new)
-        }
-    }
-    
-    func updateIndex(onNext: Bool) {
-        let lastItem = items.value.count - 1
-        let firstItem = 0
-        let pressedNextOnLastItem = onNext && currentIndex == lastItem
-        let pressedBackOnFirstItem = !onNext && currentIndex == firstItem
-        if pressedNextOnLastItem {
-            currentIndex = 0
-        } else if pressedBackOnFirstItem {
-            currentIndex = lastItem
-        } else {
-            onNext ? (currentIndex += 1) : (currentIndex -= 1)
-        }
-        displayPhotos(at: currentIndex, onNext: onNext)
-    }
-    
-    @IBAction func topButtonPressed(_ sender: Any) {
-        
-    }
-    
-    @IBAction func bottomButtonPressed(_ sender: Any) {
-        
-    }
-    
-    @IBAction func leftButtonPressed(_ sender: Any) {
-        updateIndex(onNext: false)
-    }
-    
-    @IBAction func rightButtonPressed(_ sender: Any) {
-        updateIndex(onNext: true)
-    }
 }
 
-// API
+// MARK: - API
+
 extension ViewController {
     func pullImages(limit: Int = 20, skip: Int = 0) -> Observable<[ImageObject]> {
-        let query = PFQuery(className: "TopLevelHashtags")
+        let query = PFQuery(className: currentTag)
         query.limit = limit
         query.skip = skip
         
@@ -197,24 +231,27 @@ extension ViewController {
                 switch err == nil {
                 case true:
                     guard let objects = objs, !objects.isEmpty else {
-                        o.onError(NSError()); o.onCompleted()
-                        return
+                        o.onError(NSError())
+                        o.onCompleted(); return
                     }
                     var results: [ImageObject] = []
                     var counterOne = results.count
                     
                     while counterOne < objects.count {
-                        guard let object = ImageObject.create(from: objects[counterOne]) else {
-                            o.onError(NSError()); o.onCompleted()
-                            return
+                        guard let object = ImageObject
+                            .create(from: objects[counterOne]) else {
+                                o.onError(NSError())
+                                o.onCompleted(); return
                         }
                         results.append(object)
                         counterOne += 1
                     }
-                    o.onNext(results); o.onCompleted()
+                    o.onNext(results)
+                    o.onCompleted()
                     
                 case false:
-                    o.onError(err!); o.onCompleted()
+                    o.onError(err!)
+                    o.onCompleted()
                 }
             }
             return Disposables.create {}
@@ -222,8 +259,9 @@ extension ViewController {
     }
 }
 
+// MARK: - Extensions
+
 extension Array where Element: ImageObject {
-    
     func fetchImages(_ completion: @escaping ([Element]) -> Void) {
         DispatchQueue.global(qos: .background).async {
             self.forEach { (value) in
