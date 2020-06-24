@@ -41,14 +41,6 @@ class ImageObject {
         self.image = image
     }
     
-    func fetchImageData(_ completion: @escaping (Data) -> Void) {
-        image.getDataInBackground { [weak self] (data, error) in
-            guard let data = data else { return }
-            self?.localImage = data
-            completion(data)
-        }
-    }
-    
     static func create(from pfObject: PFObject) -> ImageObject? {
         guard
             let objectId = pfObject.objectId,
@@ -80,20 +72,25 @@ class ViewController: UIViewController {
     @IBOutlet weak var imageViewTwo: UIImageView!
     
     var currentIndex: Int = 0
-    var currentTag: String = "TopLevelHashtags"
+    var currentTag: String?
     var items = BehaviorRelay<[ImageObject]>(value: [])
     
     private var dismissingModal: Bool = false
     private var timer: Timer?
+    private var loader: UIActivityIndicatorView!
     private let disposeBag = DisposeBag()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        loader = UIActivityIndicatorView(frame: .init(origin: view.center, size: .init(width: 100, height: 100)))
+        loader.color = .orange
         bind()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
         guard !dismissingModal else {
             startTimer(); return
         }
@@ -101,6 +98,7 @@ class ViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        
         dismissingModal = true
     }
     
@@ -108,6 +106,11 @@ class ViewController: UIViewController {
         stopTimer()
         let sb = UIStoryboard(name: "Main", bundle: nil)
         guard let vc = sb.instantiateViewController(withIdentifier: "slideshow") as? ViewController else { return }
+        vc.modalTransitionStyle = .crossDissolve
+        vc.modalPresentationStyle = .fullScreen
+        
+        let tag = items.value[currentIndex].hashtagId
+        vc.currentTag = tag
         present(vc, animated: true)
     }
     
@@ -133,8 +136,8 @@ private extension ViewController {
     func transitionImages(with newData: Data) {
         let newImage = UIImage(data: newData)
         self.imageViewOne.alpha == 1
-            ? (self.imageViewTwo.image = newImage) : self.imageViewTwo.alpha == 1
-            ? (self.imageViewOne.image = newImage) : ()
+            ? (imageViewTwo.image = newImage) : imageViewTwo.alpha == 1
+            ? (imageViewOne.image = newImage) : ()
         
         UIView.animate(withDuration: 1.0, animations: {
             self.imageViewTwo.alpha = self.imageViewTwo.alpha == 0 ? 1 : 0
@@ -143,15 +146,20 @@ private extension ViewController {
     }
     
     func displayPhotos(at offsetIndex: Int = 0, onNext: Bool, isFirst: Bool = false) {
-        if let new = items.value[offsetIndex].localImage {
+        // DispatchQueue.main.async {
+        if let new = self.items.value[offsetIndex].localImage {
             guard !isFirst else {
-                self.imageViewOne.image = UIImage(data: new); return
+                self.imageViewOne.image = UIImage(data: new)
+                self.startTimer(); return
             }
             self.transitionImages(with: new)
         }
+        //}
     }
     
     func updateIndex(onNext: Bool) {
+        startTimer()
+        
         let lastItem: Int = items.value.count - 1,
         firstItem: Int = 0
         let pressedBackOnFirstItem: Bool = !onNext && currentIndex == firstItem,
@@ -167,14 +175,6 @@ private extension ViewController {
         displayPhotos(at: currentIndex, onNext: onNext)
     }
     
-    func startTimer() {
-        timer = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true, block: { [weak self] (_) in
-            guard let self = self else { return }
-            self.rightButtonPressed(self)
-        })
-        timer?.fire()
-    }
-    
     func stopTimer() {
         if timer?.isValid == true {
             timer?.invalidate()
@@ -182,37 +182,54 @@ private extension ViewController {
         timer = nil
     }
     
+    func startTimer() {
+        stopTimer()
+        timer = Timer.scheduledTimer(withTimeInterval: 7.0, repeats: true, block: { [weak self] (_) in
+            guard let self = self else { return }
+            self.rightButtonPressed(self)
+        })
+    }
+    
+    func displayAlert(message: String) {
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: "Attention", message: message, preferredStyle: .alert)
+            let action = UIAlertAction(title: "Okay", style: .default) { (_) in
+                self.dismiss(animated: true)
+            }
+            alert.addAction(action)
+            self.present(alert, animated: true)
+        }
+    }
+    
     func bind() {
+        view.addSubview(loader)
+        loader.center = view.center
+        loader.startAnimating()
+        
         imageViewOne.backgroundColor = .clear
         imageViewTwo.backgroundColor = .clear
         imageViewTwo.alpha = 0
         
-        pullImages()
+        pullImages(partitionkey: currentTag)
             .observeOn(MainScheduler.asyncInstance)
+            .catchError({ [weak self] (error) -> Observable<[ImageObject]> in
+                let errMesssage = ((error as? HoldError)?.localizedDescription ?? error.localizedDescription)
+                self?.displayAlert(message: "ERROR:\n" + errMesssage + "\n\(self?.currentTag ?? "#")")
+                return .just([])
+            })
             .share()
             .bind(to: items)
             .disposed(by: disposeBag)
         
         items
-            .asObservable()
-            .skip(1)
-            .observeOn(MainScheduler.asyncInstance)
-            .subscribe(
-                onNext: { (objects) in
-                    let obs = objects
-                    obs.fetchImages({ [weak self] _ in
-                        guard let self = self else { return }
-                        DispatchQueue.main.async {
-                            self.displayPhotos(onNext: true, isFirst: true)
-                            self.startTimer()
-                        }
-                    })
-            },
-                onError: { (error) in
-                    print("error")
-            },
-                onCompleted: {
-                    print("Finished Loading Images")
+            .observeOn(MainScheduler.instance)
+            .skipWhile({ $0.isEmpty })
+            .subscribe(onNext: { (objects) in
+                let obs = objects
+                obs.fetchImages({ [weak self] _ in
+                    self?.loader.stopAnimating()
+                    self?.displayPhotos(onNext: true, isFirst: true)
+                })
             })
             .disposed(by: disposeBag)
     }
@@ -221,8 +238,11 @@ private extension ViewController {
 // MARK: - API
 
 extension ViewController {
-    func pullImages(limit: Int = 20, skip: Int = 0) -> Observable<[ImageObject]> {
-        let query = PFQuery(className: currentTag)
+    func pullImages(limit: Int = 20, skip: Int = .random(in: 0...2500), partitionkey: String? = nil) -> Observable<[ImageObject]> {
+        var query = PFQuery(className: "TopLevelHashtags")
+        if let key = partitionkey {
+            query = PFQuery(className: "TopLevelHashtags", predicate: NSPredicate(format: "hashtagId = '\(key)'"))
+        }
         query.limit = limit
         query.skip = skip
         
@@ -231,22 +251,21 @@ extension ViewController {
                 switch err == nil {
                 case true:
                     guard let objects = objs, !objects.isEmpty else {
-                        o.onError(NSError())
+                        o.onError(HoldError.emptyResponse)
                         o.onCompleted(); return
                     }
                     var results: [ImageObject] = []
                     var counterOne = results.count
                     
                     while counterOne < objects.count {
-                        guard let object = ImageObject
-                            .create(from: objects[counterOne]) else {
-                                o.onError(NSError())
-                                o.onCompleted(); return
+                        guard let object = ImageObject.create(from: objects[counterOne]) else {
+                            o.onError(HoldError.parsing)
+                            o.onCompleted(); return
                         }
                         results.append(object)
                         counterOne += 1
+                        o.onNext(results)
                     }
-                    o.onNext(results)
                     o.onCompleted()
                     
                 case false:
@@ -263,14 +282,31 @@ extension ViewController {
 
 extension Array where Element: ImageObject {
     func fetchImages(_ completion: @escaping ([Element]) -> Void) {
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.global().async {
             self.forEach { (value) in
                 value.localImage = try? value.image.getData()
-                print("\(value.objectId)")
             }
             DispatchQueue.main.async {
                 completion(self)
             }
+        }
+    }
+}
+
+//MARK: - Errors
+
+enum HoldError: Error {
+    case parsing
+    case emptyResponse
+    case unAuthorized
+    case database
+    
+    public var localizedDescription: String {
+        switch self {
+        case .parsing: return "Unable to parse the object model"
+        case .emptyResponse: return "Empty response from API"
+        case .unAuthorized: return "Unauthorized credentials"
+        case .database: return "API database error"
         }
     }
 }
