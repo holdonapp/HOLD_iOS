@@ -225,8 +225,7 @@ private extension ViewController {
             .observeOn(MainScheduler.instance)
             .skipWhile({ $0.isEmpty })
             .subscribe(onNext: { (objects) in
-                let obs = objects
-                obs.fetchImages({ [weak self] _ in
+                objects.fetchImages({ [weak self] _ in
                     self?.loader.stopAnimating()
                     self?.displayPhotos(onNext: true, isFirst: true)
                 })
@@ -235,7 +234,7 @@ private extension ViewController {
     }
 }
 
-// MARK: - API
+// MARK: - HOLD API
 
 extension ViewController {
     func pullImages(limit: Int = 20, skip: Int = .random(in: 0...2500), partitionkey: String? = nil) -> Observable<[ImageObject]> {
@@ -278,7 +277,7 @@ extension ViewController {
     }
 }
 
-// MARK: - Extensions
+// MARK: - Native Apple Extensions
 
 extension Array where Element: ImageObject {
     func fetchImages(_ completion: @escaping ([Element]) -> Void) {
@@ -293,7 +292,7 @@ extension Array where Element: ImageObject {
     }
 }
 
-//MARK: - Errors
+//MARK: - HOLD Errors
 
 enum HoldError: Error {
     case parsing
