@@ -10,60 +10,6 @@ import RxSwift
 import RxCocoa
 import Parse
 
-// MARK: - Model
-
-class ImageObject {
-    var objectId: String = ""
-    var description: String?
-    var hashtagId: String = ""
-    var secondaryHashtagId: String = ""
-    var uploadedByUsername: String?
-    
-    /// Image File Object
-    var image: PFFileObject
-    
-    /// Client Side Initialization Only
-    var localImage: Data?
-    
-    init(
-        objectId: String,
-        description: String?,
-        hashtagId: String,
-        secondaryHashtagId: String,
-        uploadedByUsername: String?,
-        image: PFFileObject
-    ) {
-        self.objectId = objectId
-        self.description = description
-        self.hashtagId = hashtagId
-        self.secondaryHashtagId = secondaryHashtagId
-        self.uploadedByUsername = uploadedByUsername
-        self.image = image
-    }
-    
-    static func create(from pfObject: PFObject) -> ImageObject? {
-        guard
-            let objectId = pfObject.objectId,
-            let hashtagId = pfObject["hashtagId"] as? String,
-            let secondaryHashtagId = pfObject["secondaryHashtagId"] as? String,
-            let image = pfObject["image"] as? PFFileObject
-            else {
-                return  nil
-        }
-        let description = pfObject["description"] as? String
-        let uploadedByUsername = pfObject["uploadedByUsername"] as? String
-        
-        return ImageObject(
-            objectId: objectId,
-            description: description,
-            hashtagId: hashtagId,
-            secondaryHashtagId: secondaryHashtagId,
-            uploadedByUsername: uploadedByUsername,
-            image: image
-        )
-    }
-}
-
 // MARK: - Lifecycle
 
 class ViewController: UIViewController {
@@ -78,19 +24,18 @@ class ViewController: UIViewController {
     private var dismissingModal: Bool = false
     private var timer: Timer?
     private var loader: UIActivityIndicatorView!
+    
     private let disposeBag = DisposeBag()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        loader = UIActivityIndicatorView(frame: .init(origin: view.center, size: .init(width: 100, height: 100)))
-        loader.color = .orange
+        showLoader()
+        setupImageViews()
         bind()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
         guard !dismissingModal else {
             startTimer(); return
         }
@@ -98,7 +43,6 @@ class ViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
         dismissingModal = true
     }
     
@@ -146,7 +90,14 @@ private extension ViewController {
     }
     
     func displayPhotos(at offsetIndex: Int = 0, onNext: Bool, isFirst: Bool = false) {
-        // DispatchQueue.main.async {
+        let count = items.value.count
+        guard offsetIndex != count else {
+            items.accept([])
+            showLoader()
+            currentIndex = 0
+            bind()
+            return
+        }
         if let new = self.items.value[offsetIndex].localImage {
             guard !isFirst else {
                 self.imageViewOne.image = UIImage(data: new)
@@ -154,7 +105,6 @@ private extension ViewController {
             }
             self.transitionImages(with: new)
         }
-        //}
     }
     
     func updateIndex(onNext: Bool) {
@@ -164,11 +114,10 @@ private extension ViewController {
         firstItem: Int = 0
         let pressedBackOnFirstItem: Bool = !onNext && currentIndex == firstItem,
         pressedNextOnLastItem: Bool = onNext && currentIndex == lastItem
-        
         if pressedNextOnLastItem {
-            currentIndex = 0
+            currentIndex += 1
         } else if pressedBackOnFirstItem {
-            currentIndex = lastItem
+            currentIndex += 0
         } else {
             onNext ? (currentIndex += 1) : (currentIndex -= 1)
         }
@@ -190,28 +139,24 @@ private extension ViewController {
         })
     }
     
-    func displayAlert(message: String) {
-        DispatchQueue.main.async {
-            let alert = UIAlertController(title: "Attention", message: message, preferredStyle: .alert)
-            let action = UIAlertAction(title: "Okay", style: .default) { (_) in
-                self.dismiss(animated: true)
-            }
-            alert.addAction(action)
-            self.present(alert, animated: true)
-        }
-    }
-    
-    func bind() {
+    func showLoader() {
+        loader = UIActivityIndicatorView(frame: .init(origin: view.center, size: .init(width: 200, height: 200)))
+        loader.color = .black
         view.addSubview(loader)
         loader.center = view.center
         loader.startAnimating()
-        
+    }
+    
+    func setupImageViews() {
         imageViewOne.backgroundColor = .clear
         imageViewTwo.backgroundColor = .clear
         imageViewTwo.alpha = 0
-        
+    }
+    
+    func bind() {
         pullImages(partitionkey: currentTag)
             .observeOn(MainScheduler.asyncInstance)
+            .retry(10) // <-- Arbitrary number just incase random index lands after a set of hashtags that DO exist.
             .catchError({ [weak self] (error) -> Observable<[ImageObject]> in
                 let errMesssage = ((error as? HoldError)?.localizedDescription ?? error.localizedDescription)
                 self?.displayAlert(message: "ERROR:\n" + errMesssage + "\n\(self?.currentTag ?? "#")")
@@ -222,12 +167,16 @@ private extension ViewController {
             .disposed(by: disposeBag)
         
         items
-            .observeOn(MainScheduler.instance)
             .skipWhile({ $0.isEmpty })
-            .subscribe(onNext: { (objects) in
-                objects.fetchImages({ [weak self] _ in
-                    self?.loader.stopAnimating()
-                    self?.displayPhotos(onNext: true, isFirst: true)
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { [weak self] in
+                $0.fetchImages(controllerInCaseOfError: self, { [weak self] _, error in
+                    if let err = error {
+                        self?.displayAlert(message: err.localizedDescription)
+                    } else {
+                        self?.displayPhotos(onNext: true, isFirst: true)
+                    }
+                    self?.loader.removeFromSuperview()
                 })
             })
             .disposed(by: disposeBag)
@@ -251,15 +200,14 @@ extension ViewController {
                 case true:
                     guard let objects = objs, !objects.isEmpty else {
                         o.onError(HoldError.emptyResponse)
-                        o.onCompleted(); return
+                        return
                     }
                     var results: [ImageObject] = []
                     var counterOne = results.count
-                    
                     while counterOne < objects.count {
                         guard let object = ImageObject.create(from: objects[counterOne]) else {
                             o.onError(HoldError.parsing)
-                            o.onCompleted(); return
+                            return
                         }
                         results.append(object)
                         counterOne += 1
@@ -269,7 +217,6 @@ extension ViewController {
                     
                 case false:
                     o.onError(err!)
-                    o.onCompleted()
                 }
             }
             return Disposables.create {}
@@ -277,35 +224,3 @@ extension ViewController {
     }
 }
 
-// MARK: - Native Apple Extensions
-
-extension Array where Element: ImageObject {
-    func fetchImages(_ completion: @escaping ([Element]) -> Void) {
-        DispatchQueue.global().async {
-            self.forEach { (value) in
-                value.localImage = try? value.image.getData()
-            }
-            DispatchQueue.main.async {
-                completion(self)
-            }
-        }
-    }
-}
-
-//MARK: - HOLD Errors
-
-enum HoldError: Error {
-    case parsing
-    case emptyResponse
-    case unAuthorized
-    case database
-    
-    public var localizedDescription: String {
-        switch self {
-        case .parsing: return "Unable to parse the object model"
-        case .emptyResponse: return "Empty response from API"
-        case .unAuthorized: return "Unauthorized credentials"
-        case .database: return "API database error"
-        }
-    }
-}

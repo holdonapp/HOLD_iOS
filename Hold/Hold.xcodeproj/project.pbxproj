@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -15,6 +15,9 @@
 		84002870219CA6270005ADA9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8400286F219CA6270005ADA9 /* Assets.xcassets */; };
 		84002873219CA6270005ADA9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 84002871219CA6270005ADA9 /* LaunchScreen.storyboard */; };
 		8400287E219CA6270005ADA9 /* HoldTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8400287D219CA6270005ADA9 /* HoldTests.swift */; };
+		9AD7512C24A5E29300D76681 /* ImageObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AD7512B24A5E29300D76681 /* ImageObject.swift */; };
+		9AD7512E24A84A5300D76681 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AD7512D24A84A5300D76681 /* Extensions.swift */; };
+		9AD7513024A88F9A00D76681 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AD7512F24A88F9A00D76681 /* LoginViewController.swift */; };
 		C6678349C5A19D6F6F9A68C2 /* Pods_Hold.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E787CBE8747F10FE5D3790E3 /* Pods_Hold.framework */; };
 /* End PBXBuildFile section */
 
@@ -43,6 +46,9 @@
 		84002879219CA6270005ADA9 /* HoldTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HoldTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8400287D219CA6270005ADA9 /* HoldTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoldTests.swift; sourceTree = "<group>"; };
 		8400287F219CA6270005ADA9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9AD7512B24A5E29300D76681 /* ImageObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageObject.swift; sourceTree = "<group>"; };
+		9AD7512D24A84A5300D76681 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		9AD7512F24A88F9A00D76681 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		D3726C29B5968F2B8D8BEA84 /* Pods-HoldTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HoldTests.debug.xcconfig"; path = "Target Support Files/Pods-HoldTests/Pods-HoldTests.debug.xcconfig"; sourceTree = "<group>"; };
 		E787CBE8747F10FE5D3790E3 /* Pods_Hold.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Hold.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3BA784415B7C5C0B6DAE0FA /* Pods_HoldTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HoldTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -101,7 +107,10 @@
 			isa = PBXGroup;
 			children = (
 				84002865219CA6250005ADA9 /* AppDelegate.swift */,
+				9AD7512B24A5E29300D76681 /* ImageObject.swift */,
 				84002867219CA6250005ADA9 /* ViewController.swift */,
+				9AD7512F24A88F9A00D76681 /* LoginViewController.swift */,
+				9AD7512D24A84A5300D76681 /* Extensions.swift */,
 				84002869219CA6250005ADA9 /* Main.storyboard */,
 				8400286F219CA6270005ADA9 /* Assets.xcassets */,
 				84002871219CA6270005ADA9 /* LaunchScreen.storyboard */,
@@ -128,7 +137,6 @@
 				D3726C29B5968F2B8D8BEA84 /* Pods-HoldTests.debug.xcconfig */,
 				67CDC383CF8AB8D1E9444F56 /* Pods-HoldTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -300,8 +308,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9AD7513024A88F9A00D76681 /* LoginViewController.swift in Sources */,
+				9AD7512E24A84A5300D76681 /* Extensions.swift in Sources */,
 				84002868219CA6250005ADA9 /* ViewController.swift in Sources */,
 				84002866219CA6250005ADA9 /* AppDelegate.swift in Sources */,
+				9AD7512C24A5E29300D76681 /* ImageObject.swift in Sources */,
 				8400286E219CA6250005ADA9 /* Hold.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
